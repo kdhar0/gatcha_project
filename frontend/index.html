@@ -47,12 +47,18 @@
                 <!-- Infos joueur -->
                 <div id="player-info" class="card">
                     <h3>Votre profil</h3>
-                    <p>Niveau: <span id="player-level">1</span></p>
+                    <p>Niveau: <span id="player-level">0</span></p>
                     <div class="xp-bar-container">
                         <div class="xp-bar" id="player-xp-bar"></div>
                     </div>
                     <p>Experience: <span id="player-exp">0</span> / <span id="player-exp-max">50</span></p>
-                    <p>Monstres: <span id="player-monsters-count">0</span> / <span id="player-monsters-max">11</span></p>
+                    <p>Monstres: <span id="player-monsters-count">0</span> / <span id="player-monsters-max">10</span></p>
+                    <div class="xp-buttons">
+                        <button class="btn btn-small" onclick="addPlayerXP(10)">+10 XP</button>
+                        <button class="btn btn-small" onclick="addPlayerXP(50)">+50 XP</button>
+                        <button class="btn btn-small" onclick="addPlayerXP(100)">+100 XP</button>
+                        <button class="btn btn-small btn-success" onclick="playerLevelUp()">Level Up</button>
+                    </div>
                 </div>
 
                 <!-- Bouton Invocation -->

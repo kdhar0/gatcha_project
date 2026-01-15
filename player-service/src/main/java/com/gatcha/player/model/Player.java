@@ -24,7 +24,7 @@ public class Player {
 
     // Constructeur vide
     public Player() {
-        this.level = 1;
+        this.level = 0;
         this.experience = 0;
         this.experienceToNextLevel = 50;
         this.monsterIds = new ArrayList<>();
@@ -33,7 +33,7 @@ public class Player {
     // Constructeur avec username
     public Player(String username) {
         this.username = username;
-        this.level = 1;
+        this.level = 0;
         this.experience = 0;
         this.experienceToNextLevel = 50;
         this.monsterIds = new ArrayList<>();

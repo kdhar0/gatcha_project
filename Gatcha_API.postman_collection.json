@@ -8,12 +8,62 @@
 		{
 			"key": "token",
 			"value": ""
+		},
+		{
+			"key": "monsterId",
+			"value": ""
 		}
 	],
 	"item": [
 		{
 			"name": "1. Auth API",
 			"item": [
+				{
+					"name": "Register (bob)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"bob\",\n    \"password\": \"bob\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/register",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register (alice)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"alice\",\n    \"password\": \"alice\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/register",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
 				{
 					"name": "Login (bob)",
 					"event": [
@@ -53,6 +103,20 @@
 				},
 				{
 					"name": "Login (alice)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -71,29 +135,6 @@
 							"host": ["localhost"],
 							"port": "8081",
 							"path": ["api", "auth", "login"]
-						}
-					}
-				},
-				{
-					"name": "Register (nouveau compte)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"nouveauuser\",\n    \"password\": \"monmotdepasse\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8081/api/auth/register",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "8081",
-							"path": ["api", "auth", "register"]
 						}
 					}
 				},
@@ -141,9 +182,10 @@
 		},
 		{
 			"name": "2. Player API",
+			"description": "API Joueur - Gestion des profils utilisateurs\n\n- level: 0 a 50\n- experience: 50 XP pour level up, puis x1.1 a chaque niveau\n- monstres: max = 10 + level",
 			"item": [
 				{
-					"name": "Get Profile",
+					"name": "Get Profile (toutes les infos)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -162,7 +204,7 @@
 					}
 				},
 				{
-					"name": "Get Level",
+					"name": "Get Level (niveau du joueur)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -181,7 +223,7 @@
 					}
 				},
 				{
-					"name": "Get Monster IDs",
+					"name": "Get Monsters (liste des monstres)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -196,6 +238,56 @@
 							"host": ["localhost"],
 							"port": "8082",
 							"path": ["api", "player", "monsters"]
+						}
+					}
+				},
+				{
+					"name": "Add Experience (+10 XP)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/experience?amount=10",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "experience"],
+							"query": [
+								{
+									"key": "amount",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Add Experience (+50 XP)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/experience?amount=50",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "experience"],
+							"query": [
+								{
+									"key": "amount",
+									"value": "50"
+								}
+							]
 						}
 					}
 				},
@@ -225,7 +317,7 @@
 					}
 				},
 				{
-					"name": "Force Level Up",
+					"name": "Force Level Up (gain de niveau)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -244,6 +336,44 @@
 					}
 				},
 				{
+					"name": "Add Monster (acquisition)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/monsters/{{monsterId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "monsters", "{{monsterId}}"]
+						}
+					}
+				},
+				{
+					"name": "Remove Monster (suppression)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/monsters/{{monsterId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "monsters", "{{monsterId}}"]
+						}
+					}
+				},
+				{
 					"name": "[PUBLIC] List All Players",
 					"request": {
 						"method": "GET",
@@ -254,6 +384,20 @@
 							"host": ["localhost"],
 							"port": "8082",
 							"path": ["api", "player", "public", "list"]
+						}
+					}
+				},
+				{
+					"name": "[PUBLIC] Get Player by Username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/player/public/bob",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "public", "bob"]
 						}
 					}
 				}
@@ -316,6 +460,20 @@
 			"item": [
 				{
 					"name": "Invoke Monster",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.monster && jsonData.monster.id) {",
+									"    pm.collectionVariables.set('monsterId', jsonData.monster.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [

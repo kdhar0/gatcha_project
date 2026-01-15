@@ -179,6 +179,67 @@ async function loadPlayerData() {
     }
 }
 
+/**
+ * Ajoute de l'experience au joueur
+ */
+async function addPlayerXP(amount) {
+    console.log('addPlayerXP appelé avec amount:', amount);
+    console.log('Token:', authToken);
+    try {
+        const response = await fetch(`${API_BASE.player}/experience?amount=${amount}`, {
+            method: 'POST',
+            headers: { 'Authorization': authToken }
+        });
+
+        console.log('Response status:', response.status);
+        if (response.ok) {
+            const player = await response.json();
+            console.log('Player updated:', player);
+            await loadPlayerData();
+            alert('XP ajouté! Nouveau total: ' + player.experience + '/' + player.experienceToNextLevel);
+        } else if (response.status === 401) {
+            alert('Session expirée, reconnexion...');
+            logout();
+        } else {
+            const error = await response.text();
+            alert('Erreur: ' + error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur de connexion: ' + error.message);
+    }
+}
+
+/**
+ * Force le gain d'un niveau pour le joueur
+ */
+async function playerLevelUp() {
+    console.log('playerLevelUp appelé');
+    try {
+        const response = await fetch(`${API_BASE.player}/levelup`, {
+            method: 'POST',
+            headers: { 'Authorization': authToken }
+        });
+
+        console.log('Response status:', response.status);
+        if (response.ok) {
+            const player = await response.json();
+            console.log('Player updated:', player);
+            await loadPlayerData();
+            alert('Level up! Nouveau niveau: ' + player.level);
+        } else if (response.status === 401) {
+            alert('Session expirée, reconnexion...');
+            logout();
+        } else {
+            const error = await response.text();
+            alert('Erreur: ' + error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur de connexion: ' + error.message);
+    }
+}
+
 // ==================== MONSTRES ====================
 
 async function loadMonsters() {
