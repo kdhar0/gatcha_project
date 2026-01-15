@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # Base de donnees MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: gatcha-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - gatcha-network
+
+  # API Authentification
+  auth-service:
+    build: ./auth-service
+    container_name: gatcha-auth
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/gatcha_auth
+    depends_on:
+      - mongodb
+    networks:
+      - gatcha-network
+
+  # API Joueur
+  player-service:
+    build: ./player-service
+    container_name: gatcha-player
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/gatcha_player
+      - AUTH_SERVICE_URL=http://auth-service:8081
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - gatcha-network
+
+  # API Monstres
+  monster-service:
+    build: ./monster-service
+    container_name: gatcha-monster
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/gatcha_monster
+      - AUTH_SERVICE_URL=http://auth-service:8081
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - gatcha-network
+
+  # API Invocations
+  invocation-service:
+    build: ./invocation-service
+    container_name: gatcha-invocation
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/gatcha_invocation
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - MONSTER_SERVICE_URL=http://monster-service:8083
+      - PLAYER_SERVICE_URL=http://player-service:8082
+    depends_on:
+      - mongodb
+      - auth-service
+      - monster-service
+      - player-service
+    networks:
+      - gatcha-network
+
+  # API Combat (BONUS)
+  combat-service:
+    build: ./combat-service
+    container_name: gatcha-combat
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/gatcha_combat
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - MONSTER_SERVICE_URL=http://monster-service:8083
+    depends_on:
+      - mongodb
+      - auth-service
+      - monster-service
+    networks:
+      - gatcha-network
+
+  # Frontend simple
+  frontend:
+    build: ./frontend
+    container_name: gatcha-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - invocation-service
+      - combat-service
+    networks:
+      - gatcha-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  gatcha-network:
+    driver: bridge

@@ -1,0 +1,43 @@
+# Fichiers compiles Java
+target/
+*.class
+*.jar
+*.war
+
+
+# Fichiers IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+*.swp
+*~
+
+
+# Maven Wrapper (non utilise)
+.mvn/
+mvnw
+mvnw.cmd
+
+
+# Fichiers systeme
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# =========================
+# NE PAS IGNORER (fichiers essentiels)
+# =========================
+# docker-compose.yml
+# README.md
+# Gatcha_API.postman_collection.json
+# Gatcha APIs.pdf
+# monstres-with-loot-rate.json
+# mongo-init/
+# */Dockerfile
+# */pom.xml
+# */src/
+# frontend/

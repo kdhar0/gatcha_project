@@ -1,0 +1,433 @@
+{
+	"info": {
+		"name": "Gatcha API",
+		"description": "Collection Postman pour tester les APIs du projet Gatcha",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "1. Auth API",
+			"item": [
+				{
+					"name": "Login (bob)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"bob\",\n    \"password\": \"bob\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login (alice)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"alice\",\n    \"password\": \"alice\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Register (nouveau compte)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"nouveauuser\",\n    \"password\": \"monmotdepasse\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/register",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/auth/validate?token={{token}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "validate"],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/auth/logout?token={{token}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "logout"],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Player API",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/profile",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Get Level",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/level",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "level"]
+						}
+					}
+				},
+				{
+					"name": "Get Monster IDs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/monsters",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "monsters"]
+						}
+					}
+				},
+				{
+					"name": "Add Experience (+100 XP)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/experience?amount=100",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "experience"],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Force Level Up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8082/api/player/levelup",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "levelup"]
+						}
+					}
+				},
+				{
+					"name": "[PUBLIC] List All Players",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/player/public/list",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["api", "player", "public", "list"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Monster API",
+			"item": [
+				{
+					"name": "Get All My Monsters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8083/api/monsters",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["api", "monsters"]
+						}
+					}
+				},
+				{
+					"name": "[PUBLIC] Get Player Monsters (bob)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/monsters/public/player/bob",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["api", "monsters", "public", "player", "bob"]
+						}
+					}
+				},
+				{
+					"name": "[PUBLIC] Get Player Monsters (alice)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/monsters/public/player/alice",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["api", "monsters", "public", "player", "alice"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Invocation API",
+			"item": [
+				{
+					"name": "Invoke Monster",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8084/api/invocation/invoke",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "invocation", "invoke"]
+						}
+					}
+				},
+				{
+					"name": "Get Invocation History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8084/api/invocation/history",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "invocation", "history"]
+						}
+					}
+				},
+				{
+					"name": "Retry Failed Invocations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8084/api/invocation/retry",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "invocation", "retry"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Combat API (BONUS)",
+			"item": [
+				{
+					"name": "Fight (bob vs alice)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monster1\": {\n        \"playerName\": \"bob\",\n        \"element\": \"fire\",\n        \"hp\": 1200,\n        \"atk\": 450,\n        \"def\": 300,\n        \"vit\": 85,\n        \"skills\": [\n            {\n                \"num\": 1,\n                \"dmg\": 125,\n                \"ratioStat\": \"atk\",\n                \"ratioPercent\": 25,\n                \"cooldown\": 0\n            },\n            {\n                \"num\": 2,\n                \"dmg\": 250,\n                \"ratioStat\": \"atk\",\n                \"ratioPercent\": 27.5,\n                \"cooldown\": 2\n            },\n            {\n                \"num\": 3,\n                \"dmg\": 425,\n                \"ratioStat\": \"atk\",\n                \"ratioPercent\": 40,\n                \"cooldown\": 5\n            }\n        ]\n    },\n    \"monster2\": {\n        \"playerName\": \"alice\",\n        \"element\": \"water\",\n        \"hp\": 1400,\n        \"atk\": 350,\n        \"def\": 400,\n        \"vit\": 75,\n        \"skills\": [\n            {\n                \"num\": 1,\n                \"dmg\": 80,\n                \"ratioStat\": \"def\",\n                \"ratioPercent\": 40,\n                \"cooldown\": 0\n            },\n            {\n                \"num\": 2,\n                \"dmg\": 120,\n                \"ratioStat\": \"def\",\n                \"ratioPercent\": 60,\n                \"cooldown\": 2\n            },\n            {\n                \"num\": 3,\n                \"dmg\": 180,\n                \"ratioStat\": \"hp\",\n                \"ratioPercent\": 10,\n                \"cooldown\": 3\n            }\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8085/api/combat/fight",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8085",
+							"path": ["api", "combat", "fight"]
+						}
+					}
+				},
+				{
+					"name": "Get Combat History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/combat/history",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8085",
+							"path": ["api", "combat", "history"]
+						}
+					}
+				},
+				{
+					"name": "Get Combat Replay",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/combat/replay/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8085",
+							"path": ["api", "combat", "replay", "1"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatcha Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gatcha Game</h1>
+
+        <!-- Section Connexion -->
+        <div id="login-section" class="section">
+            <h2>Connexion</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Identifiant:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Se connecter</button>
+                <button type="button" class="btn btn-secondary" onclick="register()">Creer un compte</button>
+            </form>
+            <p id="login-message" class="message"></p>
+        </div>
+
+        <!-- Section Jeu (cachee par defaut) -->
+        <div id="game-section" class="section hidden">
+            <div class="header">
+                <h2>Bienvenue, <span id="player-name"></span>!</h2>
+                <button class="btn btn-small" onclick="logout()">Deconnexion</button>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="showTab('home')">Accueil</button>
+                <button class="tab-btn" onclick="showTab('arena')">Arena</button>
+                <button class="tab-btn" onclick="showTab('history')">Historique</button>
+            </div>
+
+            <!-- Tab Accueil -->
+            <div id="tab-home" class="tab-content">
+                <!-- Infos joueur -->
+                <div id="player-info" class="card">
+                    <h3>Votre profil</h3>
+                    <p>Niveau: <span id="player-level">1</span></p>
+                    <div class="xp-bar-container">
+                        <div class="xp-bar" id="player-xp-bar"></div>
+                    </div>
+                    <p>Experience: <span id="player-exp">0</span> / <span id="player-exp-max">50</span></p>
+                    <p>Monstres: <span id="player-monsters-count">0</span> / <span id="player-monsters-max">11</span></p>
+                </div>
+
+                <!-- Bouton Invocation -->
+                <div class="invocation-section">
+                    <h3>Invocation</h3>
+                    <button id="invoke-btn" class="btn btn-invoke" onclick="invokeMonster()">
+                        Invoquer!
+                    </button>
+                </div>
+
+                <!-- Resultat de l'invocation -->
+                <div id="invocation-result" class="card hidden">
+                    <h3>Monstre invoque!</h3>
+                    <div id="monster-details"></div>
+                </div>
+
+                <!-- Liste des monstres -->
+                <div id="monsters-list" class="card">
+                    <h3>Vos monstres</h3>
+                    <p class="hint">Cliquez sur un monstre pour le gerer</p>
+                    <div id="monsters-container"></div>
+                </div>
+            </div>
+
+            <!-- Tab Arena -->
+            <div id="tab-arena" class="tab-content hidden">
+                <div class="card">
+                    <h3>Arena PvP - Combat entre joueurs</h3>
+                    <p class="hint">Selectionnez deux joueurs et leurs monstres pour un combat!</p>
+
+                    <div class="arena-selection">
+                        <!-- Joueur 1 -->
+                        <div class="fighter-selection player1-panel">
+                            <h4>JOUEUR 1</h4>
+                            <div class="form-group">
+                                <label>Selectionner un joueur</label>
+                                <select id="p1-player-select" class="select-monster" onchange="loadPlayerMonstersArena(1)">
+                                    <option value="">-- Choisir un joueur --</option>
+                                </select>
+                            </div>
+                            <div id="p1-monsters-list" class="arena-monsters-list"></div>
+                        </div>
+
+                        <div class="vs-badge">VS</div>
+
+                        <!-- Joueur 2 -->
+                        <div class="fighter-selection player2-panel">
+                            <h4>JOUEUR 2</h4>
+                            <div class="form-group">
+                                <label>Selectionner un joueur</label>
+                                <select id="p2-player-select" class="select-monster" onchange="loadPlayerMonstersArena(2)">
+                                    <option value="">-- Choisir un joueur --</option>
+                                </select>
+                            </div>
+                            <div id="p2-monsters-list" class="arena-monsters-list"></div>
+                        </div>
+                    </div>
+
+                    <button id="arena-fight-btn" class="btn btn-fight" onclick="startArenaCombat()">
+                        COMBAT!
+                    </button>
+                </div>
+
+                <!-- Resultat du combat -->
+                <div id="arena-combat-result" class="card hidden">
+                    <h3>Resultat du Combat</h3>
+                    <div id="arena-combat-summary"></div>
+                    <div id="arena-turn-logs" class="arena-logs"></div>
+                    <button class="btn" onclick="closeArenaResult()">Fermer</button>
+                </div>
+            </div>
+
+            <!-- Tab Historique -->
+            <div id="tab-history" class="tab-content hidden">
+                <div class="card">
+                    <h3>Historique des Combats</h3>
+                    <div id="combat-history-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal details monstre -->
+        <div id="monster-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h2 id="modal-title">Details du monstre</h2>
+
+                <div class="monster-stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Element</span>
+                        <span class="stat-value" id="modal-element"></span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Niveau</span>
+                        <span class="stat-value" id="modal-level"></span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">HP</span>
+                        <span class="stat-value" id="modal-hp"></span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">ATK</span>
+                        <span class="stat-value" id="modal-atk"></span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">DEF</span>
+                        <span class="stat-value" id="modal-def"></span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">VIT</span>
+                        <span class="stat-value" id="modal-vit"></span>
+                    </div>
+                </div>
+
+                <div class="monster-xp-section">
+                    <h3>Experience</h3>
+                    <div class="xp-bar-container">
+                        <div class="xp-bar" id="modal-xp-bar"></div>
+                    </div>
+                    <p>XP: <span id="modal-xp">0</span> / <span id="modal-xp-max">100</span></p>
+                    <p>Points de competence: <span id="modal-skill-points">0</span></p>
+                    <div class="xp-buttons">
+                        <button class="btn btn-small" onclick="addMonsterXP(50)">+50 XP</button>
+                        <button class="btn btn-small" onclick="addMonsterXP(100)">+100 XP</button>
+                        <button class="btn btn-small" onclick="addMonsterXP(500)">+500 XP</button>
+                    </div>
+                </div>
+
+                <div class="skills-section">
+                    <h3>Competences</h3>
+                    <div id="skills-container"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-danger" onclick="deleteMonster()">Supprimer ce monstre</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Replay -->
+        <div id="replay-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <span class="close-btn" onclick="closeReplayModal()">&times;</span>
+                <h2>Rediffusion du Combat #<span id="replay-combat-number"></span></h2>
+
+                <div class="replay-fighters">
+                    <div class="replay-fighter" id="replay-fighter1"></div>
+                    <div class="vs-badge">VS</div>
+                    <div class="replay-fighter" id="replay-fighter2"></div>
+                </div>
+
+                <div class="replay-controls">
+                    <button class="btn btn-small" onclick="replayPrev()">Precedent</button>
+                    <span id="replay-turn-indicator">Tour 0 / 0</span>
+                    <button class="btn btn-small" onclick="replayNext()">Suivant</button>
+                    <button class="btn btn-small btn-success" onclick="replayAuto()">Auto</button>
+                </div>
+
+                <div id="replay-log" class="replay-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
